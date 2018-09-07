@@ -10,7 +10,8 @@ type Repositories struct {
 	Diff               *Diff
 	BranchRestrictions *BranchRestrictions
 	Webhooks           *Webhooks
-	Downloads		   *Downloads
+	Downloads          *Downloads
+	Branches           *Branches
 	repositories
 }
 

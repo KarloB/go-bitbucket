@@ -72,6 +72,10 @@ type branchrestrictions interface {
 	Delete(opt BranchRestrictionsOptions) (interface{}, error)
 }
 
+type branches interface {
+	Create(opt BranchesOptions) (interface{}, error)
+}
+
 type diff interface {
 	GetDiff(opt DiffOptions) (interface{}, error)
 	GetPatch(opt DiffOptions) (interface{}, error)
@@ -141,12 +145,11 @@ type CommitsOptions struct {
 }
 
 type CommitStatusOptions struct {
-	Key 		string `json:"key"`
-	Url 		string `json:"url"`
-	State 		string `json:"state"`
-	Name 		string `json:"name"`
+	Key         string `json:"key"`
+	Url         string `json:"url"`
+	State       string `json:"state"`
+	Name        string `json:"name"`
 	Description string `json:"description"`
-
 }
 
 type BranchRestrictionsOptions struct {
@@ -201,8 +204,14 @@ type RepositoryPipelineKeyPairOptions struct {
 }
 
 type DownloadsOptions struct {
-	Owner       string `json:"owner"`
-	RepoSlug    string `json:"repo_slug"`
-	FilePath    string `json:"filepath"`
-	FileName    string `json:"filename"`
+	Owner    string `json:"owner"`
+	RepoSlug string `json:"repo_slug"`
+	FilePath string `json:"filepath"`
+	FileName string `json:"filename"`
+}
+
+type BranchesOptions struct {
+	Owner    string `json:"owner"`
+	RepoSlug string `json:"repo_slug"`
+	Name     string `json:"name"`
 }
