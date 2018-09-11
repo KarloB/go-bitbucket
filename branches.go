@@ -27,19 +27,16 @@ type Target struct {
 }
 
 func (b *Branches) buildBranchesBody(bo *BranchesOptions) string {
-
 	body := branchesBody{
 		Name: bo.Name,
 		Target: Target{
-			Hash: "default",
+			Hash: bo.Commit,
 		},
 	}
-
 	data, err := json.Marshal(body)
 	if err != nil {
 		pp.Println(err)
 		os.Exit(9)
 	}
-
 	return string(data)
 }

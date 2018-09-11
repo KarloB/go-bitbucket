@@ -122,9 +122,15 @@ func injectClient(a *auth) *Client {
 	return c
 }
 
+type executeOptions struct {
+	ignorePagination bool
+}
+
+const DEC_RADIX = 10
+
 func (c *Client) execute(method string, urlStr string, text string) (interface{}, error) {
 	// Use pagination if changed from default value
-	const DEC_RADIX = 10
+
 	if strings.Contains(urlStr, "/repositories/") {
 		if c.Pagelen != DEFAULT_PAGE_LENGTH {
 			urlObj, err := url.Parse(urlStr)
@@ -150,6 +156,9 @@ func (c *Client) execute(method string, urlStr string, text string) (interface{}
 
 	c.authenticateRequest(req)
 	result, err := c.doRequest(req, false)
+	if err != nil {
+		return nil, err
+	}
 
 	//autopaginate.
 	resultMap, isMap := result.(map[string]interface{})
@@ -247,12 +256,13 @@ func (c *Client) doRequest(req *http.Request, emptyResponse bool) (interface{}, 
 	if err != nil {
 		return nil, err
 	}
+
 	if resp.Body != nil {
 		defer resp.Body.Close()
 	}
 
 	if (resp.StatusCode != http.StatusOK) && (resp.StatusCode != http.StatusCreated) {
-		return nil, fmt.Errorf(resp.Status)
+		return nil, httpResponseErr(resp)
 	}
 
 	if emptyResponse {
@@ -283,4 +293,29 @@ func (c *Client) requestUrl(template string, args ...interface{}) string {
 		return GetApiBaseURL() + template
 	}
 	return GetApiBaseURL() + fmt.Sprintf(template, args...)
+}
+
+func (c *Client) executeLimited(method string, urlStr string, text string) (interface{}, error) {
+	urlObj, err := url.Parse(urlStr)
+	if err != nil {
+		return nil, err
+	}
+	q := urlObj.Query()
+	q.Set("pagelen", strconv.FormatUint(1, DEC_RADIX))
+	urlObj.RawQuery = q.Encode()
+	urlStr = urlObj.String()
+	body := strings.NewReader(text)
+	req, err := http.NewRequest(method, urlStr, body)
+	if err != nil {
+		return nil, err
+	}
+	if text != "" {
+		req.Header.Set("Content-Type", "application/json")
+	}
+	c.authenticateRequest(req)
+	result, err := c.doRequest(req, false)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }

@@ -214,4 +214,5 @@ type BranchesOptions struct {
 	Owner    string `json:"owner"`
 	RepoSlug string `json:"repo_slug"`
 	Name     string `json:"name"`
+	Commit   string `json:"commit"`
 }
